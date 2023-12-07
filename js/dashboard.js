@@ -1,22 +1,71 @@
-// Ensure the DOM is fully loaded before initializing the dashboard
-document.addEventListener('DOMContentLoaded', function() {
-    // The element where the dashboard will be mounted
-    const dashboardMountPoint = document.getElementById("my-superset-container");
+async function getToken(dashboardId) {
+    let login_data = {
+        username: "admin",
+        password: "Bhav1998@",
+        provider: "db",
+        refresh: true,
+    };
+    let token_data = {
+        resources: [
+            { id: dashboardId, type: "dashboard" },
+        ],
+        rls: [],
+        user: { first_name: "Guest", last_name: "User", username: "guest" },
+    };
 
-    // Ensure the element and the SDK are available
-    if (dashboardMountPoint && typeof supersetEmbeddedSdk !== 'undefined') {
-        supersetEmbeddedSdk.embedDashboard({
-            id: dashboardMountPoint.dataset.dashboardId, // Assumes your HTML has <div id="my-superset-container" data-dashboard-id="YOUR_DASHBOARD_ID"></div>
-            supersetDomain: "https://analytics.ignatius.io",
-            mountPoint: dashboardMountPoint,
-            fetchGuestToken: getToken, // This assumes 'getToken' is a global function made available by the SDK or another included script
-            dashboardUiConfig: {
-                hideTitle: true,
-                hideChartControls: true,
-                hideTab: true,
+    const login_option = {
+        method: "POST",
+        body: JSON.stringify(login_data),
+        headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            Accept: "application/json",
+        },
+    };
+
+    var token = await fetch(
+        "//analytics.ignatius.io/api/v1/security/login",
+        login_option
+    )
+    .then(async (loginData) => {
+        const token_option = {
+            method: "POST",
+            body: JSON.stringify(token_data),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                Accept: "application/json",
+                Authorization: "Bearer " + (await loginData.json()).access_token,
             },
+        };
+
+        return fetch(
+            "//analytics.ignatius.io/api/v1/security/guest_token/",
+            token_option
+        )
+        .then(async (response) => {
+            if (!response.ok) throw new Error('Response not OK');
+            return (await response.json()).token;
         });
-    } else {
-        console.error('Superset SDK or dashboard mount point not found.');
-    }
+    })
+    .catch((error) => {
+        console.error("There was an error!", error);
+    });
+
+    return token;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const dashboardMountPoint = document.getElementById("my-superset-container");
+    const dashboardId = dashboardMountPoint.dataset.dashboardId;
+
+    supersetEmbeddedSdk.embedDashboard({
+        id: dashboardId,
+        supersetDomain: "https://analytics.ignatius.io",
+        mountPoint: dashboardMountPoint,
+        fetchGuestToken: async () => await getToken(dashboardId),
+        dashboardUiConfig: {
+            hideTitle: true,
+            hideChartControls: true,
+            hideTab: true,
+        },
+    });
 });
