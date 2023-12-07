@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Namari - Free Landing Page Template</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+    <link rel="shortcut icon" href="images/favicon.ico" title="Favicon"/>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/namari-color.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link href="css/animate.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <script src="https://unpkg.com/@superset-ui/embedded-sdk"></script>
+
+
+
+</head>
+<body>
+
+<div id="preloader">
+    <div id="status" class="la-ball-triangle-path">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+
+<div class="page-border" data-wow-duration="0.7s" data-wow-delay="0.2s">
+    <div class="top-border wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown;"></div>
+    <div class="right-border wow fadeInRight animated" style="visibility: visible; animation-name: fadeInRight;"></div>
+    <div class="bottom-border wow fadeInUp animated" style="visibility: visible; animation-name: fadeInUp;"></div>
+    <div class="left-border wow fadeInLeft animated" style="visibility: visible; animation-name: fadeInLeft;"></div>
+</div>
+
+<div id="wrapper">
+
+    <header id="banner" class="scrollto clearfix" data-enllax-ratio=".5">
+        <div id="header" class="nav-collapse">
+            <!-- [Navigation and Logo sections] -->
+        </div>
+
+        <!--Banner Content-->
+        <div id="banner-content" class="row clearfix">
+            <div class="col-38">
+                <div class="section-heading">
+                    <h1>VERMONT TRAFFIC INSIGHTS</h1>
+                    <h2>A Closer Look at Traffic Stops Across Vermont</h2>
+                </div>
+
+                <!-- Vermont Map Image -->
+
+                <!-- [Call to Action button] -->
+            </div>
+        </div><!--End of Row-->
+    </header>
+
+  <!--Main Content Area-->
+<main id="content">
+
+    <!-- Data Overview Section -->
+    <section id="data-overview" class="scrollto">
+        <div class="row clearfix">
+            <div class="col-3">
+                <div class="section-heading">
+                    <h3>OVERVIEW</h3>
+                    <h2 class="section-title">Vermont Traffic Stops: An Overview</h2>
+                    <p class="section-subtitle">A comprehensive analysis of traffic stops in Vermont, revealing key trends and patterns.</p>
+                </div>
+            </div>
+
+            <div class="col-2-3">
+                <p>
+                    In this section, you can provide a brief overview of the traffic stops data in Vermont, mentioning the total number of stops, the period covered, and any significant findings that set the tone for the detailed analysis to follow.
+                </p>
+                <!-- Placeholder for an overview dashboard/graph -->
+                <div id="overview-dashboard">     <div class="pretext">
+                    <p id="my-superset-container"></p>
+              
+                    <script>
+                      async function getToken() {
+                        let login_data = {
+                          username: "admin",
+                          password: "Bhav1998@",
+                          provider: "db",
+                          refresh: true,
+                        };
+                        let token_data = {
+                          resources: [
+                            { id: "9c2de011-1932-4d60-bf78-7de50825c428", type: "dashboard" },
+                          ],
+                          rls: [],
+                          user: { first_name: "Guest", last_name: "User", username: "guest" },
+                        };
+                        var sp = "";
+              
+                        //access token option
+                        const login_option = {
+                          method: "POST",
+                          body: JSON.stringify(login_data),
+                          headers: {
+                            "Content-type": "application/json; charset=UTF-8",
+                            Accept: "application/json",
+                          },
+                        };
+              
+                        var token = await fetch(
+                          "//analytics.ignatius.io/api/v1/security/login",
+                          login_option
+                        )
+                          .then(async (loginData) => {
+                            const isJson = loginData.headers
+                              .get("content-type")
+                              ?.includes("application/json");
+                            const loginResponse = isJson && (await loginData.json());
+              
+                            const token_option = {
+                              method: "POST",
+                              body: JSON.stringify(token_data),
+                              headers: {
+                                "Content-type": "application/json; charset=UTF-8",
+                                Accept: "application/json",
+                                Authorization: loginData.access_token,
+                              },
+                            };
+              
+                            const getToken = await fetch(
+                              "//analytics.ignatius.io/api/v1/security/guest_token/",
+                              token_option
+                            )
+                              .then(async (tokenData) => {
+                                const isJson1 = tokenData.headers
+                                  .get("content-type")
+                                  ?.includes("application/json");
+                                const tokenResponse = isJson && (await tokenData.json());
+                                // check for error response
+                                if (!tokenData.ok) {
+                                  // get error message from body or default to response status
+                                  const error =
+                                    (tokenResponse && tokenResponse.message) || tokenData.status;
+                                  return Promise.reject(error);
+                                }
+                                return tokenResponse.token;
+                              })
+                              .catch((error) => {
+                                console.error(
+                                  "There was an error fetching guest token",
+                                  error
+                                );
+                              });
+              
+                            // check for error response
+                            if (!loginData.ok) {
+                              // get error message from body or default to response status
+                              const error = (loginData && loginData.message) || loginData.status;
+                              return Promise.reject(error);
+                            }
+                            return getToken;
+                          })
+                          .catch((error) => {
+                            console.error("There was an error fetching access token!", error);
+                          });
+              
+                        return token;
+                      }
+                      supersetEmbeddedSdk.embedDashboard({
+                        id: "9c2de011-1932-4d60-bf78-7de50825c428",
+                        supersetDomain: "https://analytics.ignatius.io",
+                        mountPoint: document.getElementById("my-superset-container"),
+                        fetchGuestToken: async () => await getToken(),
+                        dashboardUiConfig: {
+                          // dashboard UI config: hideTitle, hideTab, hideChartControls, filters.visible, filters.expanded (optional)
+                          hideTitle: true,
+                          hideChartControls: true,
+                          hideTab: true,
+                        },
+                      });
+                    </script></div>
+                  </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demographic Analysis Section -->
+    <section id="demographic-analysis" class="scrollto">
+        <div class="row clearfix">
+            <div class="col-3">
+                <div class="section-heading">
+                    <h3>DEMOGRAPHICS</h3>
+                    <h2 class="section-title">Demographic Breakdown of Stops</h2>
+                    <p class="section-subtitle">Understanding the impact of traffic stops on different demographic groups.</p>
+                </div>
+            </div>
+
+            <div class="col-2-3">
+                <p>
+                    Here, detail the demographic breakdown of the traffic stops, such as age, gender, and ethnicity of the drivers stopped. Discuss any disparities or noteworthy patterns observed.
+                </p>
+                <!-- Placeholder for demographic analysis dashboard/graph -->
+                <div id="demographic-dashboard">[Dashboard/Graph Placeholder]</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Outcome Analysis Section -->
+    <section id="outcome-analysis" class="scrollto">
+        <div class="row clearfix">
+            <div class="col-3">
+                <div class="section-heading">
+                    <h3>OUTCOMES</h3>
+                    <h2 class="section-title">Analysis of Stop Outcomes</h2>
+                    <p class="section-subtitle">Examining the consequences and outcomes of traffic stops in Vermont.</p>
+                </div>
+            </div>
+
+            <div class="col-2-3">
+                <p>
+                    This section should focus on the outcomes of the traffic stops, such as warnings, tickets, arrests, or searches. Highlight any trends or significant findings.
+                </p>
+                <!-- Placeholder for outcome analysis dashboard/graph -->
+                <div id="outcome-dashboard">[Dashboard/Graph Placeholder]</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Geographical Analysis Section -->
+    <section id="geographical-analysis" class="scrollto">
+        <div class="row clearfix">
+            <div class="col-3">
+                <div class="section-heading">
+                    <h3>GEOGRAPHICAL</h3>
+                    <h2 class="section-title">Geographical Distribution of Stops</h2>
+                    <p class="section-subtitle">Exploring the spatial patterns of traffic stops across Vermont.</p>
+                </div>
+            </div>
+
+            <div class="col-2-3">
+                <p>
+                    Discuss the geographical distribution of the traffic stops. Are there certain areas with higher incidences? What might these patterns suggest?
+                </p>
+                <!-- Placeholder for geographical analysis dashboard/graph -->
+                <div id="geographical-dashboard">[Dashboard/Graph Placeholder]</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [Rest of the sections remain unchanged] -->
+
+</main>
+
+    <!-- [Footer and JavaScript resources] -->
+</div>
+
+<script src="js/jquery.1.8.3.min.js"></script>
+<script src="js/wow.min.js"></script>
+<script src="js/featherlight.min.js"></script>
+<script src="js/featherlight.gallery.min.js"></script>
+<script src="js/jquery.enllax.min.js"></script>
+<script src="js/jquery.scrollUp.min.js"></script>
+<script src="js/jquery.easing.min.js"></script>
+<script src="js/jquery.stickyNavbar.min.js"></script>
+<script src="js/jquery.waypoints.min.js"></script>
+<script src="js/images-loaded.min.js"></script>
+<script src="js/lightbox.min.js"></script>
+<script src="js/site.js"></script>
+
+</body>
+</html>
