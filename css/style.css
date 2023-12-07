@@ -36,7 +36,28 @@
     box-sizing: border-box;
 }
 
-body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, blockquote, th, td {
+
+h1 {
+    margin: 0;
+    padding: 0;
+    direction: ltr;
+    color:#fff;
+    text-align: justify;
+}
+
+
+
+h2 {
+    margin: 0;
+    padding: 0;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    color:#000;
+    text-align: justify;
+}
+
+
+body, div, dl, dt, dd, ul, ol, li, h3, h4, h5, h6, pre, form, blockquote, th, td {
     margin: 0;
     padding: 0;
     direction: ltr;
@@ -52,6 +73,7 @@ body {
 
 p {
     line-height: 25px;
+    text-align: left;
 }
 
 .row img {
