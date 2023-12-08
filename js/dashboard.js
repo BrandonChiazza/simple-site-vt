@@ -52,10 +52,9 @@ async function getToken(dashboardId) {
 
     return token;
 }
-
 function initializeDashboard(dashboardContainer) {
     const dashboardId = dashboardContainer.dataset.dashboardId;
-    const mountPoint = dashboardContainer.querySelector('.superset-container');
+    const mountPoint = dashboardContainer.querySelector('p');  // Updated to select the <p> element
 
     supersetEmbeddedSdk.embedDashboard({
         id: dashboardId,
@@ -70,24 +69,7 @@ function initializeDashboard(dashboardContainer) {
     });
 }
 
-
 document.addEventListener('DOMContentLoaded', function() {
     const dashboardContainers = document.querySelectorAll('.dashboard-container');
     dashboardContainers.forEach(container => initializeDashboard(container));
-});
-document.addEventListener('DOMContentLoaded', function() {
-    const dashboardMountPoint = document.getElementById("my-superset-container");
-    const dashboardId = dashboardMountPoint.dataset.dashboardId;
-
-    supersetEmbeddedSdk.embedDashboard({
-        id: dashboardId,
-        supersetDomain: "https://analytics.ignatius.io",
-        mountPoint: dashboardMountPoint,
-        fetchGuestToken: async () => await getToken(dashboardId),
-        dashboardUiConfig: {
-            hideTitle: true,
-            hideChartControls: true,
-            hideTab: true,
-        },
-    });
 });
